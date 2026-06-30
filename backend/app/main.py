@@ -8,6 +8,9 @@ from app.core.config import get_settings
 from app.core.logging import setup_logging
 from app.core.middleware import CorrelationIDMiddleware
 
+from app.api.v1.health import router as health_router
+
+
 setup_logging()
 
 logger = logging.getLogger(__name__)
@@ -35,6 +38,9 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(auth_router, prefix="/api/v1")
+    app.include_router(health_router, prefix="/api/v1")
+
+
 
     logger.info("IntegrAI Ops API starting", extra={"environment": settings.APP_ENV})
 
