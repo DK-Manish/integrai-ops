@@ -54,6 +54,11 @@ class Settings(BaseSettings):
         """CORS_ORIGINS as a parsed list, since it's stored as a comma-separated string."""
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
+    @property
+    def sqlalchemy_database_url(self) -> str:
+        """DATABASE_URL adapted for SQLAlchemy's async engine (asyncpg driver)."""
+        return self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 
 @lru_cache
 def get_settings() -> Settings:
