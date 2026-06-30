@@ -1,8 +1,16 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.auth import router as auth_router
 from app.core.config import get_settings
+from app.core.logging import setup_logging
+from app.core.middleware import CorrelationIDMiddleware
+
+setup_logging()
+
+logger = logging.getLogger(__name__)
 
 
 def create_app() -> FastAPI:
@@ -17,6 +25,7 @@ def create_app() -> FastAPI:
         openapi_url="/api/v1/openapi.json",
     )
 
+    app.add_middleware(CorrelationIDMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins_list,
@@ -26,6 +35,8 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(auth_router, prefix="/api/v1")
+
+    logger.info("IntegrAI Ops API starting", extra={"environment": settings.APP_ENV})
 
     return app
 
